@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "background": {
     "persistent": false,
-    "scripts": ["background.js"]
+    "scripts": ["src/background.js"]
   },
   "content_scripts": [
     {
@@ -12,14 +12,14 @@
         "https://mail.google.com/*",
         "https://inbox.google.com/*"
       ],
-      "js": ["inboxsdk.js","content/gmail.js"],
+      "js": ["vendor/inboxsdk.js","src/content/gmail.js"],
       "run_at": "document_end"
     },
     {
       "matches": [
         "https://online.moysklad.ru/app/*"
       ],
-      "js": ["content/moysklad.js"],
+      "js": ["src/content/moysklad.js"],
       "run_at": "document_idle"
     }
   ],

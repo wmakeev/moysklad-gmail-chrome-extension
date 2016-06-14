@@ -1,1 +1,4 @@
-moysklad-gmail-addon
+МойСклад для Gmail
+------------------
+
+Расширение для Google Chrome.
