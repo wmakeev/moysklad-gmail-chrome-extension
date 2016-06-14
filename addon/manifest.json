@@ -1,0 +1,33 @@
+{
+  "name": "МойСклад для Gmail",
+  "description": "Открыть список заказов контрагента МойСклад из Gmail",
+  "version": "0.1.0",
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://inbox.google.com/*"
+      ],
+      "js": ["inboxsdk.js","content/gmail.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://online.moysklad.ru/app/*"
+      ],
+      "js": ["content/moysklad.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "https://mail.google.com/",
+    "https://inbox.google.com/",
+    "https://online.moysklad.ru/app/*"
+  ],
+  "manifest_version": 2
+}
