@@ -1,18 +1,31 @@
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log(sender.tab ?
-              "from a content script:" + sender.tab.url :
-              "from the extension")
+;(function () {
+  const chrome = window.chrome
 
-  if (request.agentEmail) {
-    chrome.tabs.query({ 
-      url: 'https://online.moysklad.ru/app/*', currentWindow: true 
-    }, function (tabs) {
-      console.debug('tabs', tabs)
-      chrome.tabs.sendMessage(tabs[0].id, request, function (response) {
-        console.log('moysklad tab response', response)
-        sendResponse(response)
+  chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    console.log(sender.tab
+      ? 'from a content script:' + sender.tab.url
+      : 'from the extension', request)
+
+    if (request.targetTab) {
+      chrome.tabs.query({
+        url: request.targetTab, currentWindow: true
+      }, function (tabs) {
+        console.debug('tabs', tabs)
+        if (!tabs.length) { return sendResponse(null) }
+
+        chrome.tabs.sendMessage(tabs[0].id, request, function (response) {
+          console.log('moysklad tab response', response)
+          sendResponse(response)
+        })
+
+        if (request.switchTab) {
+          chrome.tabs.update(tabs[0].id, { active: true })
+        }
       })
-    })
-  }
-})
+
+      // this will keep the message channel open to the other end until sendResponse is called
+      return true
+    }
+  })
+})()
 
