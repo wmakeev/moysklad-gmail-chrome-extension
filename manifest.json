@@ -12,14 +12,23 @@
         "https://mail.google.com/*",
         "https://inbox.google.com/*"
       ],
-      "js": ["vendor/inboxsdk.js","src/content/gmail.js"],
+      "js": [
+        "vendor/inboxsdk.js",
+        "vendor/domjs.js",
+        "vendor/kefir.min.js",
+        "src/content/gmail.js"
+      ],
       "run_at": "document_end"
     },
     {
       "matches": [
         "https://online.moysklad.ru/app/*"
       ],
-      "js": ["src/content/moysklad.js"],
+      "js": [
+        "vendor/moysklad-client.js",
+        "vendor/moysklad-router.js",
+        "src/content/moysklad.js"
+      ],
       "run_at": "document_idle"
     }
   ],
