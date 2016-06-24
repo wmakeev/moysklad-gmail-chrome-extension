@@ -8,10 +8,10 @@
 	},
 	"exclude": [
 		"node_modules",
+		"addon/vendor",
 		"bower_components",
 		"jspm_packages",
 		"tmp",
-		"temp",
-    "vendor"
+		"temp"
 	]
 }
