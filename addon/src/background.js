@@ -2,19 +2,19 @@
   const chrome = window.chrome
 
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log(sender.tab
-      ? 'from a content script:' + sender.tab.url
-      : 'from the extension', request)
+    // console.log(sender.tab
+    //   ? 'from a content script:' + sender.tab.url
+    //   : 'from the extension', request)
 
     if (request.targetTab) {
       chrome.tabs.query({
         url: request.targetTab, currentWindow: true
       }, function (tabs) {
-        console.debug('tabs', tabs)
+        // console.debug('tabs', tabs)
         if (!tabs.length) { return sendResponse(null) }
 
         chrome.tabs.sendMessage(tabs[0].id, request, function (response) {
-          console.log('moysklad tab response', response)
+          // console.log('moysklad tab response', response)
           sendResponse(response)
         })
 

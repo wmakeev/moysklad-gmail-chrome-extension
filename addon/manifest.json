@@ -1,10 +1,15 @@
 {
   "name": "МойСклад для Gmail",
-  "description": "Открыть список заказов контрагента МойСклад из Gmail",
+  "description": "Интеграция Gmail с МойСклад",
   "version": "0.1.0",
+  "icons": {
+    "128": "res/icons/moysklad-gmail-128.png"
+  },
   "background": {
     "persistent": false,
-    "scripts": ["src/background.js"]
+    "scripts": [
+      "src/background.js"
+    ]
   },
   "content_scripts": [
     {

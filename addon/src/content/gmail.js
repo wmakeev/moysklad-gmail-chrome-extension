@@ -28,6 +28,8 @@
 
   let sidebarEl = document.createElement('div')
 
+  let showSidebar = false
+
   let wrapSidebarContent = contentHtml => `
     <div style="
       padding: 10px;
@@ -42,9 +44,16 @@
     sidebarEl.innerHTML = wrapSidebarContent(contentHtml)
   }
 
-  let getSidebarAgentsInfoHtml = agents => agents.map(agent =>
-      `<a class="msext-agent-info" data-agent-id="${agent.id}"
-        href="javascript:">${agent.name}</a>`)
+  let getSidebarAgentsInfoHtml = agents => agents.map(agent => `
+    <div>
+      <a class="msext-agent-info" data-agent-id="${agent.uuid}" href="javascript:"
+        style="color:#15c;">
+        ${agent.name}
+      </a>
+      <span style="display:${agent.description ? 'block' : 'none'};font-size:10px;color:gray;">
+        ${agent.description}
+      </span>
+    </div>`).join('<br/>')
 
   let updateAgentsInfo = agents => updateSidebarContent(getSidebarAgentsInfoHtml(agents))
 
@@ -66,6 +75,7 @@
 
   InboxSDK.load('1.0', 'sdk_moysklad_gmail_c6ce2e116e').then(function (sdk) {
     let currentThreadView
+    let currentUserEmail = sdk.User.getEmailAddress()
 
     let updateCurrentThreadSidebar = threadView => {
       if (!threadView) { return }
@@ -85,7 +95,9 @@
           return res.concat(contacts)
         }, [])
         .reduce((res, contact) => {
-          res[contact.emailAddress] = contact
+          if (currentUserEmail !== contact.emailAddress) {
+            res[contact.emailAddress] = contact
+          }
           return res
         }, {})
 
@@ -97,12 +109,26 @@
         agentEmails: Object.keys(sendersByEmail)
       }, response => {
         // console.log('response', response)
+        if (response) {
+          switch (true) {
+            case response.length > 0:
+              updateAgentsInfo(response)
+              break
 
-        if (response && response.length) {
-          updateAgentsInfo(response)
+            case response.length === 0:
+              updateSidebarContent('Контрагенты для этой цеопчки писем не найдены')
+              break
+
+            default:
+              if (response.error) {
+                console.error(response.error)
+              }
+              updateSidebarContent('Ошибка при обращении к сервису МойСклад')
+          }
         } else {
-          // TODO Ссылка на переписку
-          updateSidebarContent('Нет данных')
+          updateSidebarContent('Для работы расширения необходимо открыть хотя бы одну вкладку ' +
+            'приложения <a title="Открыть МойСклад" href="https://online.moysklad.ru/app">' +
+            'МойСклад</a> в текущем окне')
         }
       })
     }
@@ -114,11 +140,11 @@
       updateCurrentThreadSidebar(threadView)
 
       threadView.addSidebarContentPanel({
-        title: 'МойСклад',
+        title: 'Контрагенты МойСклад',
         el: sidebarEl
       })
 
-      threadView.on('destroy', () => updateSidebarContent('Нет данных'))
+      threadView.on('destroy', () => updateSidebarContent(''))
     })
 
     sdk.Conversations.registerMessageViewHandler(messageView => {
