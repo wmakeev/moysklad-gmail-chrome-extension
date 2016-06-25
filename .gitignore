@@ -26,3 +26,8 @@ node_modules
 
 # Typings directory
 typings
+
+# Extension pack
+addon.crx
+addon.pem
+addon.zip
