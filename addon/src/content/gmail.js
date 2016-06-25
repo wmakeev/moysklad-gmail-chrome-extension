@@ -28,8 +28,6 @@
 
   let sidebarEl = document.createElement('div')
 
-  let showSidebar = false
-
   let wrapSidebarContent = contentHtml => `
     <div style="
       padding: 10px;
@@ -65,6 +63,7 @@
     .map(el => el.dataset.agentId)
     // .log('clickedAgentInfoElements$')
     .onValue(agentId => {
+      // TODO Если вкладка не открыта, открывать по ссылке
       chrome.runtime.sendMessage({
         type: 'SHOW_AGENT',
         targetTab: 'https://online.moysklad.ru/app/*',
@@ -103,6 +102,8 @@
 
       // console.log('sendersByEmail', sendersByEmail)
 
+      // TODO Если ответа нет долго, то, возможно, МойСклад запросил авторизацию ..
+      // Уведомить пользователя о необходимости ввести логин и пароль
       chrome.runtime.sendMessage({
         type: 'GET_AGENTS_INFO',
         targetTab: 'https://online.moysklad.ru/app/*',
