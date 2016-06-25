@@ -108,7 +108,7 @@
         type: 'GET_AGENTS_INFO',
         targetTab: 'https://online.moysklad.ru/app/*',
         agentEmails: Object.keys(sendersByEmail)
-      }, response => {
+      }, function (response) {
         // console.log('response', response)
         if (response) {
           switch (true) {
@@ -134,7 +134,7 @@
       })
     }
 
-    sdk.Conversations.registerThreadViewHandler(threadView => {
+    sdk.Conversations.registerThreadViewHandler(function (threadView) {
       // console.log('ThreadViewHandler')
       currentThreadView = threadView
 
@@ -148,11 +148,9 @@
       threadView.on('destroy', () => updateSidebarContent(''))
     })
 
-    sdk.Conversations.registerMessageViewHandler(messageView => {
+    sdk.Conversations.registerMessageViewHandler(function (messageView) {
       // console.log('MessageViewHandler')
       updateCurrentThreadSidebar(currentThreadView)
     })
   })
 })()
-
-
