@@ -3,7 +3,7 @@
 
   "name": "МойСклад для Gmail",
   "description": "Интеграция Gmail с МойСклад",
-  "version": "0.1.0",
+  "version": "0.1.1",
 
   "icons": {
     "128": "res/icons/moysklad-gmail-128.png"
