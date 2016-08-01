@@ -1,4 +1,10 @@
 ;(function () {
+  const DEBUG = false
+
+  function log () {
+    if (DEBUG) console.debug.apply(console, arguments)
+  }
+
   const { chrome, moyskladRouter } = window
   const moysklad = require('moysklad-client')
 
@@ -8,14 +14,16 @@
   let router = moyskladRouter().start()
 
   chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    // console.log(sender.tab
-    //   ? 'from a content script:' + sender.tab.url
-    //   : 'from the extension', request)
+    log(sender.tab
+      ? 'from a content script:' + sender.tab.url : 'from the extension', request)
+
+    if (!request.agentEmails.length) { return }
 
     switch (request.type) {
       case 'GET_AGENTS_INFO':
         client.from('company')
         .filter('contact.email', request.agentEmails)
+        .count(10) // Max 10
         .load((err, agents) =>
           err ? sendResponse({ error: err.message }) : sendResponse(agents))
 

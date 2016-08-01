@@ -1,5 +1,10 @@
 ;(function () {
+  const DEBUG = false
   const { chrome, InboxSDK, Kefir } = window
+
+  function log () {
+    if (DEBUG) console.debug.apply(console, arguments)
+  }
 
   let mouseEventsToElementsHandler = predicate => (emitter, e) => {
     if (e.type === 'end') {
@@ -80,6 +85,7 @@
       if (!threadView) { return }
 
       let messageViews = threadView.getMessageViewsAll()
+      if (!messageViews.length) { return }
 
       let sendersByEmail = messageViews
         .reduce((res, messageView) => {
@@ -100,16 +106,19 @@
           return res
         }, {})
 
-      // console.log('sendersByEmail', sendersByEmail)
+      log('sendersByEmail', sendersByEmail)
+
+      let agentEmails = Object.keys(sendersByEmail)
+      if (!agentEmails.length) { return }
 
       // TODO Если ответа нет долго, то, возможно, МойСклад запросил авторизацию ..
       // Уведомить пользователя о необходимости ввести логин и пароль
       chrome.runtime.sendMessage({
         type: 'GET_AGENTS_INFO',
         targetTab: 'https://online.moysklad.ru/app/*',
-        agentEmails: Object.keys(sendersByEmail)
+        agentEmails
       }, response => {
-        // console.log('response', response)
+        log('response', response)
         if (response) {
           switch (true) {
             case response.length > 0:
@@ -135,7 +144,7 @@
     }
 
     sdk.Conversations.registerThreadViewHandler(threadView => {
-      // console.log('ThreadViewHandler')
+      log('ThreadViewHandler', threadView)
       currentThreadView = threadView
 
       updateCurrentThreadSidebar(threadView)
@@ -149,8 +158,10 @@
     })
 
     sdk.Conversations.registerMessageViewHandler(messageView => {
-      // console.log('MessageViewHandler')
-      updateCurrentThreadSidebar(currentThreadView)
+      log('MessageViewHandler', messageView, currentThreadView)
+      if (currentThreadView) {
+        updateCurrentThreadSidebar(currentThreadView)
+      }
     })
   })
 })()
