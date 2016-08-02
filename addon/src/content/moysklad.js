@@ -17,17 +17,18 @@
     log(sender.tab
       ? 'from a content script:' + sender.tab.url : 'from the extension', request)
 
-    if (!request.agentEmails.length) { return }
-
     switch (request.type) {
       case 'GET_AGENTS_INFO':
-        client.from('company')
-        .filter('contact.email', request.agentEmails)
-        .count(10) // Max 10
-        .load((err, agents) =>
-          err ? sendResponse({ error: err.message }) : sendResponse(agents))
+        if (request.agentEmails || request.agentEmails.length) {
+          client.from('company')
+            .filter('contact.email', request.agentEmails)
+            .count(10) // Max 10
+            .load((err, agents) =>
+              err ? sendResponse({ error: err.message }) : sendResponse(agents))
 
-        return true // wait for sendResponse
+          return true // wait for sendResponse
+        }
+        break
 
       case 'SHOW_AGENT':
         router.navigate('Company/view', request.agentId)
