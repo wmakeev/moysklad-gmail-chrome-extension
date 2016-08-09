@@ -21,7 +21,7 @@
       case 'GET_AGENTS_INFO':
         if (request.agentEmails || request.agentEmails.length) {
           client.from('company')
-            .filter('contact.email', request.agentEmails)
+            .filter('contact.email', request.agentEmails.map(email => email.toLowerCase()))
             .count(10) // Max 10
             .load((err, agents) =>
               err ? sendResponse({ error: err.message }) : sendResponse(agents))

@@ -79,7 +79,7 @@
 
   InboxSDK.load('1.0', 'sdk_moysklad_gmail_c6ce2e116e').then(function (sdk) {
     let currentThreadView
-    let currentUserEmail = sdk.User.getEmailAddress()
+    let currentUserEmail = (sdk.User.getEmailAddress() || '').toLowerCase()
 
     let updateCurrentThreadSidebar = threadView => {
       if (!threadView) { return }
@@ -100,7 +100,7 @@
           return res.concat(contacts)
         }, [])
         .reduce((res, contact) => {
-          if (currentUserEmail !== contact.emailAddress) {
+          if (currentUserEmail !== contact.emailAddress.toLowerCase()) {
             res[contact.emailAddress] = contact
           }
           return res
