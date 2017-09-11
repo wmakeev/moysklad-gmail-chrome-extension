@@ -3,7 +3,7 @@
 
   "name": "МойСклад для Gmail",
   "description": "Интеграция Gmail с МойСклад",
-  "version": "0.1.2",
+  "version": "0.2.0",
 
   "icons": {
     "128": "res/icons/moysklad-gmail-128.png"
@@ -33,7 +33,7 @@
         "https://online.moysklad.ru/app/*"
       ],
       "js": [
-        "vendor/moysklad-client.js",
+        "vendor/moysklad.js",
         "vendor/moysklad-router.js",
         "src/content/moysklad.js"
       ],

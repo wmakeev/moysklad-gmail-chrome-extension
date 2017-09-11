@@ -34,12 +34,7 @@
   let sidebarEl = document.createElement('div')
 
   let wrapSidebarContent = contentHtml => `
-    <div style="
-      padding: 10px;
-      border-color: #d8d8d8;
-      border-width: 1px;
-      border-right-style: solid;
-      border-left-style: solid;">
+    <div style="padding-left: 10px;">
       ${contentHtml}
     </div>`
 
@@ -47,37 +42,41 @@
     sidebarEl.innerHTML = wrapSidebarContent(contentHtml)
   }
 
-  let getSidebarAgentsInfoHtml = agents => agents.map(agent => `
+  let getSidebarCounterpartiesInfoHtml = counterparties => counterparties.map(counterparty => `
     <div>
-      <a class="msext-agent-info" data-agent-id="${agent.uuid}" href="javascript:"
-        style="color:#15c;">
-        ${agent.name}
+      <a class="msext-counterparty-info"
+         data-counterparty-id="${counterparty.id}"
+         href="javascript:"
+         style="color:#15c;">
+        ${counterparty.name}
       </a>
-      <span style="display:${agent.description ? 'block' : 'none'};font-size:10px;color:gray;">
-        ${agent.description}
+      <span
+        style="display:${counterparty.description ? 'block' : 'none'};font-size:10px;color:gray;">
+        ${counterparty.description}
       </span>
     </div>`).join('<br/>')
 
-  let updateAgentsInfo = agents => updateSidebarContent(getSidebarAgentsInfoHtml(agents))
+  let updateCounterpartiesInfo = counterparties =>
+    updateSidebarContent(getSidebarCounterpartiesInfoHtml(counterparties))
 
   let sidebarClicks$ = Kefir.fromEvents(sidebarEl, 'click')
   // sidebarClicks$.log('sidebarClicks$')
 
   sidebarClicks$
-    .withHandler(mouseEventsToElementsHandler(elementClassFilter('msext-agent-info')))
-    .map(el => el.dataset.agentId)
-    // .log('clickedAgentInfoElements$')
-    .onValue(agentId => {
+    .withHandler(mouseEventsToElementsHandler(elementClassFilter('msext-counterparty-info')))
+    .map(el => el.dataset.counterpartyId)
+    // .log('clickedCounterpartyInfoElements$')
+    .onValue(counterpartyId => {
       // TODO Если вкладка не открыта, открывать по ссылке
       chrome.runtime.sendMessage({
-        type: 'SHOW_AGENT',
+        type: 'SHOW_COUNTERPARTY',
         targetTab: 'https://online.moysklad.ru/app/*',
         switchTab: true,
-        agentId
+        counterpartyId
       })
     })
 
-  InboxSDK.load('1.0', 'sdk_moysklad_gmail_c6ce2e116e').then(function (sdk) {
+  InboxSDK.load(1, 'sdk_moysklad_gmail_c6ce2e116e').then(function (sdk) {
     let currentThreadView
     let currentUserEmail = sdk.User.getEmailAddress()
 
@@ -108,25 +107,25 @@
 
       log('sendersByEmail', sendersByEmail)
 
-      let agentEmails = Object.keys(sendersByEmail)
-      if (!agentEmails.length) { return }
+      let counterpartyEmails = Object.keys(sendersByEmail)
+      if (!counterpartyEmails.length) { return }
 
       // TODO Если ответа нет долго, то, возможно, МойСклад запросил авторизацию ..
       // Уведомить пользователя о необходимости ввести логин и пароль
       chrome.runtime.sendMessage({
-        type: 'GET_AGENTS_INFO',
+        type: 'GET_COUNTERPARTIES_INFO',
         targetTab: 'https://online.moysklad.ru/app/*',
-        agentEmails
+        counterpartyEmails
       }, function (response) {
         log('response', response)
         if (response) {
           switch (true) {
             case response.length > 0:
-              updateAgentsInfo(response)
+              updateCounterpartiesInfo(response)
               break
 
             case response.length === 0:
-              updateSidebarContent('Контрагенты для этой цеопчки писем не найдены')
+              updateSidebarContent('Контрагенты для этой цепочки писем не найдены')
               break
 
             default:
